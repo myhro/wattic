@@ -16,6 +16,8 @@ class Wattic:
             self.create()
         elif self.args['diff']:
             self.diff()
+        elif self.args['prune']:
+            self.prune()
 
     def create(self):
         if self.args['<repository>'].endswith('/'):
@@ -79,6 +81,24 @@ class Wattic:
             elif line.startswith('-'):
                 print(termcolor.colored(line, 'red'))
 
+    def prune(self):
+        cmd = [
+            'attic',
+            'prune',
+        ]
+        if not self.args['--force']:
+            cmd.append('--dry-run')
+        cmd.extend([
+            '--keep-hourly=24',
+            '--keep-daily=7',
+            '--keep-weekly=4',
+            '--keep-monthly=12',
+            '--keep-yearly=-1',
+            '--verbose',
+            self.args['<repository>'],
+        ])
+        subprocess.call(cmd)
+
 
 def main():
     cli = '''
@@ -87,6 +107,7 @@ def main():
     Usage:
         wattic create <repository> <folder>
         wattic diff <repository> [(<first-archive> <second-archive>)]
+        wattic prune [--force] <repository>
     '''
     Wattic(cli)
 
