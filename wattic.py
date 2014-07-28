@@ -14,25 +14,27 @@ class Wattic:
             self.create()
 
     def create(self):
-        if self.args['<archive>'].endswith('/'):
-            self.args['<archive>'] = self.args['<archive>'][:-1]
+        if self.args['<repository>'].endswith('/'):
+            self.args['<repository>'] = self.args['<repository>'][:-1]
 
         cmd = [
             'attic',
             'create',
             '--stats',
-            '{archive}::{name}'.format(
-                archive=self.args['<archive>'],
-                name=self.now,
+            '{repository}::{archive}'.format(
+                archive=self.now,
+                repository=self.args['<repository>'],
             ),
-            '{folder}'.format(folder=self.args['<folder>']),
+            self.args['<folder>'],
         ]
         subprocess.call(cmd)
 
 def main():
     cli = '''
+    A thin wrapper around the Attic Deduplicating Archiver.
+
     Usage:
-        wattic create <archive> <folder>
+        wattic create <repository> <folder>
     '''
     Wattic(cli)
 
